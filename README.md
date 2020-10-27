@@ -6,6 +6,9 @@ Benchmark utility for the [tidwall/btree](https://github.com/tidwall/btree) Go p
 - `google`: The [google/btree](https://github.com/google/btree) package
 - `go-arr`: A simple Go array
 
+The following benchmarks were run on my 2019 Macbook Pro (2.4 GHz 8-Core Intel Core i9) 
+using Go 1.15.3. The items are simple 8-byte ints.
+
 ```
 ** sequential set **
 google:  set-seq       1,000,000 ops in 175ms, 5,700,922/sec, 175 ns/op, 33.1 MB, 34 bytes/op
