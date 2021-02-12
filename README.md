@@ -7,7 +7,7 @@ Benchmark utility for the [tidwall/btree](https://github.com/tidwall/btree) Go p
 - `go-arr`: A simple Go array
 
 The following benchmarks were run on my 2019 Macbook Pro (2.4 GHz 8-Core Intel Core i9) 
-using Go 1.15.3. The items are simple 8-byte ints.
+using Go 1.15.8. The items are simple 8-byte ints.
 
 ```
 ** sequential set **
