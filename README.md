@@ -7,31 +7,31 @@ Benchmark utility for the [tidwall/btree](https://github.com/tidwall/btree) Go p
 - `go-arr`: A simple Go array
 
 The following benchmarks were run on my 2019 Macbook Pro (2.4 GHz 8-Core Intel Core i9) 
-using Go 1.16.2. The items are simple 8-byte ints.
+using Go 1.16.5. The items are simple 8-byte ints.
 
 ```
 ** sequential set **
-google:  set-seq        1,000,000 ops in 158ms, 6,321,982/sec, 158 ns/op, 30.9 MB, 32 bytes/op
-tidwall: set-seq        1,000,000 ops in 142ms, 7,066,602/sec, 141 ns/op, 36.6 MB, 38 bytes/op
-tidwall: set-seq-hint   1,000,000 ops in 77ms, 13,032,533/sec, 76 ns/op, 36.6 MB, 38 bytes/op
-tidwall: load-seq       1,000,000 ops in 38ms, 26,151,358/sec, 38 ns/op, 36.6 MB, 38 bytes/op
-go-arr:  append         1,000,000 ops in 49ms, 20,479,942/sec, 48 ns/op
+google:  set-seq        1,000,000 ops in 163ms, 6,140,597/sec, 162 ns/op, 30.9 MB, 32 bytes/op
+tidwall: set-seq        1,000,000 ops in 141ms, 7,075,240/sec, 141 ns/op, 36.6 MB, 38 bytes/op
+tidwall: set-seq-hint   1,000,000 ops in 79ms, 12,673,902/sec, 78 ns/op, 36.6 MB, 38 bytes/op
+tidwall: load-seq       1,000,000 ops in 40ms, 24,887,293/sec, 40 ns/op, 36.6 MB, 38 bytes/op
+go-arr:  append         1,000,000 ops in 51ms, 19,617,269/sec, 50 ns/op
 
 ** random set **
-google:  set-rand       1,000,000 ops in 629ms, 1,589,978/sec, 628 ns/op, 21.5 MB, 22 bytes/op
-tidwall: set-rand       1,000,000 ops in 569ms, 1,757,597/sec, 568 ns/op, 26.7 MB, 27 bytes/op
-tidwall: set-rand-hint  1,000,000 ops in 565ms, 1,769,211/sec, 565 ns/op, 26.4 MB, 27 bytes/op
-tidwall: set-again      1,000,000 ops in 390ms, 2,561,129/sec, 390 ns/op, 27.1 MB, 28 bytes/op
-tidwall: set-after-copy 1,000,000 ops in 401ms, 2,496,375/sec, 400 ns/op, 27.9 MB, 29 bytes/op
-tidwall: load-rand      1,000,000 ops in 520ms, 1,922,016/sec, 520 ns/op, 26.1 MB, 27 bytes/op
+google:  set-rand       1,000,000 ops in 666ms, 1,501,583/sec, 665 ns/op, 21.5 MB, 22 bytes/op
+tidwall: set-rand       1,000,000 ops in 569ms, 1,756,845/sec, 569 ns/op, 26.7 MB, 27 bytes/op
+tidwall: set-rand-hint  1,000,000 ops in 670ms, 1,491,637/sec, 670 ns/op, 26.4 MB, 27 bytes/op
+tidwall: set-again      1,000,000 ops in 488ms, 2,050,667/sec, 487 ns/op, 27.1 MB, 28 bytes/op
+tidwall: set-after-copy 1,000,000 ops in 494ms, 2,022,980/sec, 494 ns/op, 27.9 MB, 29 bytes/op
+tidwall: load-rand      1,000,000 ops in 594ms, 1,682,937/sec, 594 ns/op, 26.1 MB, 27 bytes/op
 
 ** sequential get **
-google:  get-seq        1,000,000 ops in 119ms, 8,391,178/sec, 119 ns/op
-tidwall: get-seq        1,000,000 ops in 118ms, 8,442,502/sec, 118 ns/op
-tidwall: get-seq-hint   1,000,000 ops in 39ms, 25,949,759/sec, 38 ns/op
+google:  get-seq        1,000,000 ops in 141ms, 7,078,690/sec, 141 ns/op
+tidwall: get-seq        1,000,000 ops in 124ms, 8,075,925/sec, 123 ns/op
+tidwall: get-seq-hint   1,000,000 ops in 40ms, 25,142,979/sec, 39 ns/op
 
 ** random get **
-google:  get-rand       1,000,000 ops in 151ms, 6,641,486/sec, 150 ns/op
-tidwall: get-rand       1,000,000 ops in 125ms, 7,984,195/sec, 125 ns/op
-tidwall: get-rand-hint  1,000,000 ops in 142ms, 7,022,156/sec, 142 ns/op
+google:  get-rand       1,000,000 ops in 152ms, 6,593,518/sec, 151 ns/op
+tidwall: get-rand       1,000,000 ops in 128ms, 7,783,293/sec, 128 ns/op
+tidwall: get-rand-hint  1,000,000 ops in 135ms, 7,403,823/sec, 135 ns/op
 ```
