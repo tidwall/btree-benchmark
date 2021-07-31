@@ -53,20 +53,20 @@ func main() {
 		tr2.ReplaceOrInsert(&keys[i])
 	})
 	print("tidwall: set-seq        ")
-	tr := tbtree.New(less)
+	tr := tbtree.NewNonConcurrent(less)
 	sortInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
 		tr.Set(&keys[i])
 	})
 	print("tidwall: set-seq-hint   ")
-	tr = tbtree.New(less)
+	tr = tbtree.NewNonConcurrent(less)
 	sortInts()
 	var hint tbtree.PathHint
 	lotsa.Ops(N, 1, func(i, _ int) {
 		tr.SetHint(&keys[i], &hint)
 	})
 	print("tidwall: load-seq       ")
-	tr = tbtree.New(less)
+	tr = tbtree.NewNonConcurrent(less)
 	sortInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
 		tr.Load(&keys[i])
@@ -88,13 +88,13 @@ func main() {
 		tr2.ReplaceOrInsert(&keys[i])
 	})
 	print("tidwall: set-rand       ")
-	tr = tbtree.New(less)
+	tr = tbtree.NewNonConcurrent(less)
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
 		tr.Set(&keys[i])
 	})
 	print("tidwall: set-rand-hint  ")
-	tr = tbtree.New(less)
+	tr = tbtree.NewNonConcurrent(less)
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
 		tr.SetHint(&keys[i], &hint)
@@ -111,7 +111,7 @@ func main() {
 		tr.Set(&keys[i])
 	})
 	print("tidwall: load-rand      ")
-	tr = tbtree.New(less)
+	tr = tbtree.NewNonConcurrent(less)
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
 		tr.Load(&keys[i])
