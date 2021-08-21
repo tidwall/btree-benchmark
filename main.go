@@ -43,11 +43,13 @@ func main() {
 		}
 	}
 
+	gMaxItems := 256
+
 	println()
 	println("** sequential set **")
 
 	print("google:  set-seq        ")
-	tr2 := gbtree.New(256)
+	tr2 := gbtree.New(gMaxItems)
 	sortInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
 		tr2.ReplaceOrInsert(&keys[i])
@@ -82,7 +84,7 @@ func main() {
 	println("** random set **")
 
 	print("google:  set-rand       ")
-	tr2 = gbtree.New(256)
+	tr2 = gbtree.New(gMaxItems)
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
 		tr2.ReplaceOrInsert(&keys[i])
