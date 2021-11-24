@@ -14,13 +14,13 @@ type intT struct {
 	val int
 }
 
-func (i *intT) Less(other gbtree.Item) bool {
-	return i.val < other.(*intT).val
+func (i intT) Less(other gbtree.Item) bool {
+	return i.val < other.(intT).val
 }
 
 func main() {
 	less := func(a, b interface{}) bool {
-		return a.(*intT).val < b.(*intT).val
+		return a.(intT).val < b.(intT).val
 	}
 	N := 1_000_000
 	keys := make([]intT, N)
@@ -32,7 +32,7 @@ func main() {
 
 	sortInts := func() {
 		sort.Slice(keys, func(i, j int) bool {
-			return less(&keys[i], &keys[j])
+			return less(keys[i], keys[j])
 		})
 	}
 
@@ -52,32 +52,32 @@ func main() {
 	tr2 := gbtree.New(gMaxItems)
 	sortInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr2.ReplaceOrInsert(&keys[i])
+		tr2.ReplaceOrInsert(keys[i])
 	})
 	print("tidwall: set-seq        ")
 	tr := tbtree.NewNonConcurrent(less)
 	sortInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr.Set(&keys[i])
+		tr.Set(keys[i])
 	})
 	print("tidwall: set-seq-hint   ")
 	tr = tbtree.NewNonConcurrent(less)
 	sortInts()
 	var hint tbtree.PathHint
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr.SetHint(&keys[i], &hint)
+		tr.SetHint(keys[i], &hint)
 	})
 	print("tidwall: load-seq       ")
 	tr = tbtree.NewNonConcurrent(less)
 	sortInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr.Load(&keys[i])
+		tr.Load(keys[i])
 	})
 	print("go-arr:  append         ")
 	var arr []interface{}
 	sortInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		arr = append(arr, &keys[i])
+		arr = append(arr, keys[i])
 	})
 
 	println()
@@ -87,36 +87,36 @@ func main() {
 	tr2 = gbtree.New(gMaxItems)
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr2.ReplaceOrInsert(&keys[i])
+		tr2.ReplaceOrInsert(keys[i])
 	})
 	print("tidwall: set-rand       ")
 	tr = tbtree.NewNonConcurrent(less)
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr.Set(&keys[i])
+		tr.Set(keys[i])
 	})
 	print("tidwall: set-rand-hint  ")
 	tr = tbtree.NewNonConcurrent(less)
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr.SetHint(&keys[i], &hint)
+		tr.SetHint(keys[i], &hint)
 	})
 	print("tidwall: set-again      ")
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr.Set(&keys[i])
+		tr.Set(keys[i])
 	})
 	print("tidwall: set-after-copy ")
 	tr = tr.Copy()
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr.Set(&keys[i])
+		tr.Set(keys[i])
 	})
 	print("tidwall: load-rand      ")
 	tr = tbtree.NewNonConcurrent(less)
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr.Load(&keys[i])
+		tr.Load(keys[i])
 	})
 
 	println()
@@ -125,17 +125,26 @@ func main() {
 	print("google:  get-seq        ")
 	sortInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr2.Get(&keys[i])
+		re := tr2.Get(keys[i])
+		if re == nil {
+			panic(re)
+		}
 	})
 	print("tidwall: get-seq        ")
 	sortInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr.Get(&keys[i])
+		re := tr.Get(keys[i])
+		if re == nil {
+			panic(re)
+		}
 	})
 	print("tidwall: get-seq-hint   ")
 	sortInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr.GetHint(&keys[i], &hint)
+		re := tr.GetHint(keys[i], &hint)
+		if re == nil {
+			panic(re)
+		}
 	})
 
 	println()
@@ -144,16 +153,25 @@ func main() {
 	print("google:  get-rand       ")
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr2.Get(&keys[i])
+		re := tr2.Get(keys[i])
+		if re == nil {
+			panic(re)
+		}
 	})
 	print("tidwall: get-rand       ")
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr.Get(&keys[i])
+		re := tr.Get(keys[i])
+		if re == nil {
+			panic(re)
+		}
 	})
 	print("tidwall: get-rand-hint  ")
 	shuffleInts()
 	lotsa.Ops(N, 1, func(i, _ int) {
-		tr.GetHint(&keys[i], &hint)
+		re := tr.GetHint(keys[i], &hint)
+		if re == nil {
+			panic(re)
+		}
 	})
 }
