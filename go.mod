@@ -4,6 +4,6 @@ go 1.16
 
 require (
 	github.com/google/btree v1.0.1
-	github.com/tidwall/btree v0.6.1
+	github.com/tidwall/btree v0.7.0
 	github.com/tidwall/lotsa v1.0.2
 )
