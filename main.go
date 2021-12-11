@@ -106,7 +106,7 @@ func main() {
 
 	// go array
 	print("go-arr:     append         ")
-	var arr []interface{}
+	var arr []intT
 	lotsa.Ops(N, 1, func(i, _ int) {
 		arr = append(arr, keys[i])
 	})
