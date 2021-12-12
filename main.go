@@ -161,4 +161,64 @@ func main() {
 			panic(re)
 		}
 	})
+
+	println()
+	println("** sequential delete **")
+	sortInts()
+
+	print("google:  del-seq        ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		tr2.Delete(keys[i])
+	})
+	print("tidwall: del-seq        ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		tr.Delete(keys[i])
+	})
+	print("tidwall: del-seq-hint   ")
+	tr = tbtree.NewNonConcurrent(less)
+	for i := range keys {
+		tr.Set(keys[i])
+	}
+	lotsa.Ops(N, 1, func(i, _ int) {
+		tr.DeleteHint(keys[i], &hint)
+	})
+
+	tr2 = gbtree.New(degree)
+	for i := range keys {
+		tr2.ReplaceOrInsert(keys[i])
+	}
+	tr = tbtree.NewNonConcurrent(less)
+	for i := range keys {
+		tr.Set(keys[i])
+	}
+
+	println()
+	println("** random delete **")
+	shuffleInts()
+
+	print("google:  del-rand        ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		tr2.Delete(keys[i])
+	})
+	print("tidwall: del-rand        ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		tr.Delete(keys[i])
+	})
+	print("tidwall: del-rand-hint   ")
+	tr = tbtree.NewNonConcurrent(less)
+	for i := range keys {
+		tr.Set(keys[i])
+	}
+	lotsa.Ops(N, 1, func(i, _ int) {
+		tr.DeleteHint(keys[i], &hint)
+	})
+	tr2 = gbtree.New(degree)
+	for i := range keys {
+		tr2.ReplaceOrInsert(keys[i])
+	}
+	tr = tbtree.NewNonConcurrent(less)
+	for i := range keys {
+		tr.Set(keys[i])
+	}
+
 }
