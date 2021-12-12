@@ -7,6 +7,3 @@ require (
 	github.com/tidwall/btree v0.7.1
 	github.com/tidwall/lotsa v1.0.2
 )
-
-
-replace github.com/tidwall/btree => ../btree
