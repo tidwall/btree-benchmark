@@ -34,4 +34,14 @@ tidwall: get-seq-hint   1,000,000 ops in 78ms, 12,815,243/sec, 78 ns/op
 google:  get-rand       1,000,000 ops in 701ms, 1,427,507/sec, 700 ns/op
 tidwall: get-rand       1,000,000 ops in 679ms, 1,473,531/sec, 678 ns/op
 tidwall: get-rand-hint  1,000,000 ops in 824ms, 1,213,805/sec, 823 ns/op
+
+** sequential delete **
+google:  del-seq        1,000,000 ops in 193ms, 5,171,431/sec, 193 ns/op
+tidwall: del-seq        1,000,000 ops in 185ms, 5,419,930/sec, 184 ns/op
+tidwall: del-seq-hint   1,000,000 ops in 97ms, 10,263,859/sec, 97 ns/op
+
+** random delete **
+google:  del-rand        1,000,000 ops in 597ms, 1,674,165/sec, 597 ns/op
+tidwall: del-rand        1,000,000 ops in 541ms, 1,850,033/sec, 540 ns/op
+tidwall: del-rand-hint   1,000,000 ops in 577ms, 1,731,654/sec, 577 ns/op
 ```
