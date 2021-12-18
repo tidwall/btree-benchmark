@@ -10,5 +10,6 @@ require (
 
 require github.com/tidwall/btree/generics v0.0.0-00010101000000-000000000000
 
-// replace github.com/tidwall/btree/generics => github.com/tidwall/btree generics
-replace github.com/tidwall/btree/generics => github.com/tidwall/btree v0.7.2-0.20211210225549-ac22dbfec23d
+replace github.com/tidwall/btree/generics => github.com/tidwall/btree v0.7.2-0.20211218004801-d8d5f837b2ad
+
+// replace github.com/tidwall/btree/generics => ../btree

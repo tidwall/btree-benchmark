@@ -248,4 +248,71 @@ func main() {
 			panic(re)
 		}
 	})
+
+	println()
+	println("** range **")
+	print("google:     ascend        ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		if i == 0 {
+			var x int
+			gtr.Ascend(func(item gbtree.Item) bool {
+				x += item.(intT).val
+				return true
+			})
+		}
+	})
+	print("tidwall:    ascend        ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		if i == 0 {
+			var x int
+			ttr.Ascend(nil, func(item interface{}) bool {
+				x += item.(intT).val
+				return true
+			})
+		}
+	})
+	print("tidwall(G): iter          ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		if i == 0 {
+			var x int
+			iter := ttrG.Iter()
+			for ok := iter.First(); ok; ok = iter.Next() {
+				x += iter.Item().val
+			}
+			iter.Release()
+		}
+	})
+	print("tidwall(G): scan          ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		if i == 0 {
+			var x int
+			ttrG.Scan(func(item intT) bool {
+				x += item.val
+				return true
+			})
+		}
+	})
+	print("tidwall(G): walk          ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		if i == 0 {
+			var x int
+			ttrG.Walk(func(items []intT) bool {
+				for j := 0; j < len(items); j++ {
+					x += items[j].val
+				}
+				return true
+			})
+		}
+	})
+
+	print("go-arr:     for-loop      ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		if i == 0 {
+			var x int
+			for j := 0; j < len(arr); j++ {
+				x += arr[j].val
+			}
+		}
+	})
+
 }
