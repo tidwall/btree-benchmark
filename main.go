@@ -112,6 +112,46 @@ func main() {
 	})
 
 	println()
+	println("** sequential get **")
+	sortInts()
+
+	print("google:     get-seq        ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		re := gtr.Get(keys[i])
+		if re == nil {
+			panic(re)
+		}
+	})
+	print("tidwall:    get-seq        ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		re := ttr.Get(keys[i])
+		if re == nil {
+			panic(re)
+		}
+	})
+	print("tidwall(G): get-seq        ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		re, ok := ttrG.Get(keys[i])
+		if !ok {
+			panic(re)
+		}
+	})
+	print("tidwall:    get-seq-hint   ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		re := ttr.GetHint(keys[i], &hint)
+		if re == nil {
+			panic(re)
+		}
+	})
+	print("tidwall(G): get-seq-hint   ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		re, ok := ttrG.GetHint(keys[i], &hintG)
+		if !ok {
+			panic(re)
+		}
+	})
+
+	println()
 	println("** random set **")
 	shuffleInts()
 
@@ -167,46 +207,6 @@ func main() {
 	ttrG = newBTreeG()
 	lotsa.Ops(N, 1, func(i, _ int) {
 		ttrG.Load(keys[i])
-	})
-
-	println()
-	println("** sequential get **")
-	sortInts()
-
-	print("google:     get-seq        ")
-	lotsa.Ops(N, 1, func(i, _ int) {
-		re := gtr.Get(keys[i])
-		if re == nil {
-			panic(re)
-		}
-	})
-	print("tidwall:    get-seq        ")
-	lotsa.Ops(N, 1, func(i, _ int) {
-		re := ttr.Get(keys[i])
-		if re == nil {
-			panic(re)
-		}
-	})
-	print("tidwall(G): get-seq        ")
-	lotsa.Ops(N, 1, func(i, _ int) {
-		re, ok := ttrG.Get(keys[i])
-		if !ok {
-			panic(re)
-		}
-	})
-	print("tidwall:    get-seq-hint   ")
-	lotsa.Ops(N, 1, func(i, _ int) {
-		re := ttr.GetHint(keys[i], &hint)
-		if re == nil {
-			panic(re)
-		}
-	})
-	print("tidwall(G): get-seq-hint   ")
-	lotsa.Ops(N, 1, func(i, _ int) {
-		re, ok := ttrG.GetHint(keys[i], &hintG)
-		if !ok {
-			panic(re)
-		}
 	})
 
 	println()
