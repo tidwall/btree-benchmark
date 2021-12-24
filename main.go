@@ -31,8 +31,11 @@ func newBTree() *tbtree.BTree {
 	return tbtree.NewNonConcurrent(less)
 }
 
-func newBTreeG() *tbtreeG.BTree[intT] {
-	return tbtreeG.NewOptions[intT](lessG, tbtreeG.Options{NoLocks: true})
+func newBTreeG() *tbtreeG.Generic[intT] {
+	return tbtreeG.NewGenericOptions[intT](lessG, tbtreeG.Options{NoLocks: true})
+}
+func newBTreeM() *tbtreeG.Map[int,struct{}] {
+	return new(tbtreeG.Map[int,struct{}])
 }
 
 func main() {
@@ -81,6 +84,12 @@ func main() {
 	lotsa.Ops(N, 1, func(i, _ int) {
 		ttrG.Set(keys[i])
 	})
+	print("tidwall(M): set-seq        ")
+	ttrM := newBTreeM()
+	lotsa.Ops(N, 1, func(i, _ int) {
+		ttrM.Set(keys[i].val, struct{}{})
+	})
+		
 	print("tidwall:    set-seq-hint   ")
 	ttr = newBTree()
 	var hint tbtree.PathHint
@@ -103,6 +112,14 @@ func main() {
 	lotsa.Ops(N, 1, func(i, _ int) {
 		ttrG.Load(keys[i])
 	})
+	print("tidwall(M): load-seq       ")
+	ttrM = newBTreeM()
+	lotsa.Ops(N, 1, func(i, _ int) {
+		ttrM.Load(keys[i].val, struct{}{})
+	})
+
+
+
 
 	// go array
 	print("go-arr:     append         ")
@@ -132,6 +149,13 @@ func main() {
 	print("tidwall(G): get-seq        ")
 	lotsa.Ops(N, 1, func(i, _ int) {
 		re, ok := ttrG.Get(keys[i])
+		if !ok {
+			panic(re)
+		}
+	})
+	print("tidwall(M): get-seq        ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		re, ok := ttrM.Get(keys[i].val)
 		if !ok {
 			panic(re)
 		}
@@ -170,6 +194,11 @@ func main() {
 	lotsa.Ops(N, 1, func(i, _ int) {
 		ttrG.Set(keys[i])
 	})
+	print("tidwall(M): set-rand       ")
+	ttrM = newBTreeM()
+	lotsa.Ops(N, 1, func(i, _ int) {
+		ttrM.Set(keys[i].val, struct{}{})
+	})
 	print("tidwall:    set-rand-hint  ")
 	ttr = newBTree()
 	lotsa.Ops(N, 1, func(i, _ int) {
@@ -180,15 +209,7 @@ func main() {
 	lotsa.Ops(N, 1, func(i, _ int) {
 		ttrG.SetHint(keys[i], &hintG)
 	})
-	print("tidwall:    set-again      ")
-	lotsa.Ops(N, 1, func(i, _ int) {
-		ttr.Set(keys[i])
-	})
-	print("tidwall(G): set-again      ")
-	lotsa.Ops(N, 1, func(i, _ int) {
-		ttrG.Set(keys[i])
-	})
-	print("tidwall(:   set-after-copy ")
+	print("tidwall:    set-after-copy ")
 	ttr = ttr.Copy()
 	lotsa.Ops(N, 1, func(i, _ int) {
 		ttr.Set(keys[i])
@@ -208,9 +229,26 @@ func main() {
 	lotsa.Ops(N, 1, func(i, _ int) {
 		ttrG.Load(keys[i])
 	})
+	ttrM = newBTreeM()
+	print("tidwall(M): load-rand      ")
+	lotsa.Ops(N, 1, func(i, _ int) {
+		ttrM.Load(keys[i].val, struct{}{})
+	})
 
 	println()
 	println("** random get **")
+	
+	shuffleInts()
+	gtr = gbtree.New(degree)
+	ttr = newBTree()
+	ttrM = newBTreeM()
+	ttrG = newBTreeG()
+	for _,key:=range keys{
+		gtr.ReplaceOrInsert(key)
+		ttrG.Set(key)
+		ttr.Set(key)
+		ttrM.Set(key.val, struct{}{})
+	}
 	shuffleInts()
 
 	print("google:     get-rand       ")
@@ -230,6 +268,13 @@ func main() {
 	print("tidwall(G): get-rand       ")
 	lotsa.Ops(N, 1, func(i, _ int) {
 		re, ok := ttrG.Get(keys[i])
+		if !ok {
+			panic(re)
+		}
+	})
+	print("tidwall(M): get-rand       ")	
+	lotsa.Ops(N, 1, func(i, _ int) {
+		re, ok := ttrM.Get(keys[i].val)
 		if !ok {
 			panic(re)
 		}
