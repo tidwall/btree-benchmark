@@ -33,8 +33,8 @@ func newBTree() *tbtree.BTree {
 func newBTreeG() *tbtree.Generic[intT] {
 	return tbtree.NewGenericOptions[intT](lessG, tbtree.Options{NoLocks: true})
 }
-func newBTreeM() *tbtree.Map[int,struct{}] {
-	return new(tbtree.Map[int,struct{}])
+func newBTreeM() *tbtree.Map[int, struct{}] {
+	return new(tbtree.Map[int, struct{}])
 }
 
 func main() {
@@ -88,7 +88,7 @@ func main() {
 	lotsa.Ops(N, 1, func(i, _ int) {
 		ttrM.Set(keys[i].val, struct{}{})
 	})
-		
+
 	print("tidwall:    set-seq-hint   ")
 	ttr = newBTree()
 	var hint tbtree.PathHint
@@ -116,9 +116,6 @@ func main() {
 	lotsa.Ops(N, 1, func(i, _ int) {
 		ttrM.Load(keys[i].val, struct{}{})
 	})
-
-
-
 
 	// go array
 	print("go-arr:     append         ")
@@ -236,13 +233,13 @@ func main() {
 
 	println()
 	println("** random get **")
-	
+
 	shuffleInts()
 	gtr = gbtree.New(degree)
 	ttr = newBTree()
 	ttrM = newBTreeM()
 	ttrG = newBTreeG()
-	for _,key:=range keys{
+	for _, key := range keys {
 		gtr.ReplaceOrInsert(key)
 		ttrG.Set(key)
 		ttr.Set(key)
@@ -271,7 +268,7 @@ func main() {
 			panic(re)
 		}
 	})
-	print("tidwall(M): get-rand       ")	
+	print("tidwall(M): get-rand       ")
 	lotsa.Ops(N, 1, func(i, _ int) {
 		re, ok := ttrM.Get(keys[i].val)
 		if !ok {
