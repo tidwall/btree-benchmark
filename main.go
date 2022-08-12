@@ -29,8 +29,8 @@ func less(a, b interface{}) bool {
 func newTBTree() *tbtree.BTree {
 	return tbtree.NewNonConcurrent(less)
 }
-func newTBTreeG() *tbtree.Generic[intT] {
-	return tbtree.NewGenericOptions[intT](lessG, tbtree.Options{NoLocks: true})
+func newTBTreeG() *tbtree.BTreeG[intT] {
+	return tbtree.NewBTreeGOptions[intT](lessG, tbtree.Options{NoLocks: true})
 }
 func newTBTreeM() *tbtree.Map[int, struct{}] {
 	return new(tbtree.Map[int, struct{}])

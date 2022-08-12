@@ -1,6 +1,6 @@
 github.com/google/btree v1.1.2 h1:xf4v41cLI2Z6FxbKm+8Bu+m8ifhj15JuZ9sa0jZCMUU=
 github.com/google/btree v1.1.2/go.mod h1:qOPhT0dTNdNzV6Z/lhRX0YXUafgPLFUh+gZMl761Gm4=
-github.com/tidwall/btree v1.3.1 h1:636+tdVDs8Hjcf35Di260W2xCW4KuoXOKyk9QWOvCpA=
-github.com/tidwall/btree v1.3.1/go.mod h1:LGm8L/DZjPLmeWGjv5kFrY8dL4uVhMmzmmLYmsObdKE=
+github.com/tidwall/btree v1.4.1 h1:m0XE8xxIrI7LiNOypNWm260JyfX4hi8Yfm8ESFfpi+k=
+github.com/tidwall/btree v1.4.1/go.mod h1:LGm8L/DZjPLmeWGjv5kFrY8dL4uVhMmzmmLYmsObdKE=
 github.com/tidwall/lotsa v1.0.2 h1:dNVBH5MErdaQ/xd9s769R31/n2dXavsQ0Yf4TMEHHw8=
 github.com/tidwall/lotsa v1.0.2/go.mod h1:X6NiU+4yHA3fE3Puvpnn1XMDrFZrE9JO2/w+UMuqgR8=
