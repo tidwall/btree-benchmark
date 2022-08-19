@@ -11,8 +11,8 @@ Benchmark utility for the [tidwall/btree](https://github.com/tidwall/btree) Go p
 
 The following benchmarks were run on my 2021 Macbook Pro M1 Max 
 using Go version 1.18.2.  
+The keys are strings filled with 16 random digits such as `5204379379828236`.  
 The degrees is 128.  
-The keys are strings filled with 16 random digits such as `5204379379828236`.
 
 ```
 ** sequential set **
