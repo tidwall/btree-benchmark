@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"os"
 	"sort"
@@ -10,42 +11,60 @@ import (
 	"github.com/tidwall/lotsa"
 )
 
-type intT int
+// type itemT int
 
-func (i intT) Less(other gbtree.Item) bool {
-	return i < other.(intT)
+// func intToItemT(i int) itemT { return itemT(i) }
+
+type itemT string
+
+func intToItemT(i int) itemT { return itemT(fmt.Sprintf("%016d", i)) }
+
+func (i itemT) Less(other gbtree.Item) bool {
+	return i < other.(itemT)
 }
 
-func lessG(a, b intT) bool {
+func lessG(a, b itemT) bool {
 	return a < b
 }
 
 func less(a, b interface{}) bool {
-	return a.(intT) < b.(intT)
+	return a.(itemT) < b.(itemT)
 }
 
 func newTBTree() *tbtree.BTree {
 	return tbtree.NewNonConcurrent(less)
 }
-func newTBTreeG() *tbtree.BTreeG[intT] {
-	return tbtree.NewBTreeGOptions[intT](lessG, tbtree.Options{NoLocks: true})
+func newTBTreeG() *tbtree.Generic[itemT] {
+	return tbtree.NewGenericOptions[itemT](lessG, tbtree.Options{NoLocks: true})
 }
-func newTBTreeM() *tbtree.Map[intT, struct{}] {
-	return new(tbtree.Map[intT, struct{}])
+func newTBTreeM() *tbtree.Map[itemT, struct{}] {
+	return new(tbtree.Map[itemT, struct{}])
 }
 func newGBTree() *gbtree.BTree {
 	return gbtree.New(128)
 }
-func newGBTreeG() *gbtree.BTreeG[intT] {
-	return gbtree.NewG[intT](128, lessG)
+func newGBTreeG() *gbtree.BTreeG[itemT] {
+	return gbtree.NewG[itemT](128, lessG)
 }
 
 func main() {
 	N := 1_000_000
-	keys := make([]intT, N)
+	keys := make([]itemT, N)
+	keysM := make(map[int]bool)
 	for i := 0; i < N; i++ {
-		keys[i] = intT(i)
+		for {
+			key := rand.Intn(10000000000000000)
+			if !keysM[key] {
+				keysM[key] = true
+				keys[i] = intToItemT(key)
+				if len(keys[i]) != 16 {
+					panic("!")
+				}
+				break
+			}
+		}
 	}
+
 	lotsa.Output = os.Stdout
 	lotsa.MemUsage = true
 
@@ -72,11 +91,11 @@ func main() {
 	withRand := true
 	withRandSet := true
 	withRange := true
-	withHints := false
+	withHints := true
 
 	var hint tbtree.PathHint
 	var hintG tbtree.PathHint
-	var arr []intT
+	var arr []itemT
 
 	if withSeq {
 		println()
@@ -357,7 +376,7 @@ func main() {
 		print("google(G):  ascend        ")
 		lotsa.Ops(N, 1, func(i, _ int) {
 			if i == 0 {
-				gtrG.Ascend(func(item intT) bool {
+				gtrG.Ascend(func(item itemT) bool {
 					return true
 				})
 			}
@@ -382,7 +401,7 @@ func main() {
 		print("tidwall(G): scan          ")
 		lotsa.Ops(N, 1, func(i, _ int) {
 			if i == 0 {
-				ttrG.Scan(func(item intT) bool {
+				ttrG.Scan(func(item itemT) bool {
 					return true
 				})
 			}
@@ -390,7 +409,7 @@ func main() {
 		print("tidwall(G): walk          ")
 		lotsa.Ops(N, 1, func(i, _ int) {
 			if i == 0 {
-				ttrG.Walk(func(items []intT) bool {
+				ttrG.Walk(func(items []itemT) bool {
 					for j := 0; j < len(items); j++ {
 					}
 					return true
