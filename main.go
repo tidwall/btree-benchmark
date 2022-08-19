@@ -10,20 +10,18 @@ import (
 	"github.com/tidwall/lotsa"
 )
 
-type intT struct {
-	val int
-}
+type intT int
 
 func (i intT) Less(other gbtree.Item) bool {
-	return i.val < other.(intT).val
+	return i < other.(intT)
 }
 
 func lessG(a, b intT) bool {
-	return a.val < b.val
+	return a < b
 }
 
 func less(a, b interface{}) bool {
-	return a.(intT).val < b.(intT).val
+	return a.(intT) < b.(intT)
 }
 
 func newTBTree() *tbtree.BTree {
@@ -32,8 +30,8 @@ func newTBTree() *tbtree.BTree {
 func newTBTreeG() *tbtree.BTreeG[intT] {
 	return tbtree.NewBTreeGOptions[intT](lessG, tbtree.Options{NoLocks: true})
 }
-func newTBTreeM() *tbtree.Map[int, struct{}] {
-	return new(tbtree.Map[int, struct{}])
+func newTBTreeM() *tbtree.Map[intT, struct{}] {
+	return new(tbtree.Map[intT, struct{}])
 }
 func newGBTree() *gbtree.BTree {
 	return gbtree.New(128)
@@ -46,7 +44,7 @@ func main() {
 	N := 1_000_000
 	keys := make([]intT, N)
 	for i := 0; i < N; i++ {
-		keys[i] = intT{i}
+		keys[i] = intT(i)
 	}
 	lotsa.Output = os.Stdout
 	lotsa.MemUsage = true
@@ -112,7 +110,7 @@ func main() {
 		print("tidwall(M): set-seq        ")
 		ttrM = newTBTreeM()
 		lotsa.Ops(N, 1, func(i, _ int) {
-			ttrM.Set(keys[i].val, struct{}{})
+			ttrM.Set(keys[i], struct{}{})
 		})
 
 		if withHints {
@@ -140,7 +138,7 @@ func main() {
 		print("tidwall(M): load-seq       ")
 		ttrM = newTBTreeM()
 		lotsa.Ops(N, 1, func(i, _ int) {
-			ttrM.Load(keys[i].val, struct{}{})
+			ttrM.Load(keys[i], struct{}{})
 		})
 
 		// go array
@@ -183,7 +181,7 @@ func main() {
 		})
 		print("tidwall(M): get-seq        ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			re, ok := ttrM.Get(keys[i].val)
+			re, ok := ttrM.Get(keys[i])
 			if !ok {
 				panic(re)
 			}
@@ -234,7 +232,7 @@ func main() {
 			print("tidwall(M): set-rand       ")
 			ttrM = newTBTreeM()
 			lotsa.Ops(N, 1, func(i, _ int) {
-				ttrM.Set(keys[i].val, struct{}{})
+				ttrM.Set(keys[i], struct{}{})
 			})
 			if withHints {
 				print("tidwall:    set-rand-hint  ")
@@ -271,7 +269,7 @@ func main() {
 			ttrM = newTBTreeM()
 			print("tidwall(M): load-rand      ")
 			lotsa.Ops(N, 1, func(i, _ int) {
-				ttrM.Load(keys[i].val, struct{}{})
+				ttrM.Load(keys[i], struct{}{})
 			})
 		}
 		println()
@@ -288,7 +286,7 @@ func main() {
 			gtrG.ReplaceOrInsert(key)
 			ttrG.Set(key)
 			ttr.Set(key)
-			ttrM.Set(key.val, struct{}{})
+			ttrM.Set(key, struct{}{})
 		}
 		shuffleInts()
 
@@ -322,7 +320,7 @@ func main() {
 		})
 		print("tidwall(M): get-rand       ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			re, ok := ttrM.Get(keys[i].val)
+			re, ok := ttrM.Get(keys[i])
 			if !ok {
 				panic(re)
 			}
@@ -351,9 +349,7 @@ func main() {
 		print("google:     ascend        ")
 		lotsa.Ops(N, 1, func(i, _ int) {
 			if i == 0 {
-				var x int
 				gtr.Ascend(func(item gbtree.Item) bool {
-					x += item.(intT).val
 					return true
 				})
 			}
@@ -361,9 +357,7 @@ func main() {
 		print("google(G):  ascend        ")
 		lotsa.Ops(N, 1, func(i, _ int) {
 			if i == 0 {
-				var x int
 				gtrG.Ascend(func(item intT) bool {
-					x += item.val
 					return true
 				})
 			}
@@ -371,9 +365,7 @@ func main() {
 		print("tidwall:    ascend        ")
 		lotsa.Ops(N, 1, func(i, _ int) {
 			if i == 0 {
-				var x int
 				ttr.Ascend(nil, func(item interface{}) bool {
-					x += item.(intT).val
 					return true
 				})
 			}
@@ -381,10 +373,8 @@ func main() {
 		print("tidwall(G): iter          ")
 		lotsa.Ops(N, 1, func(i, _ int) {
 			if i == 0 {
-				var x int
 				iter := ttrG.Iter()
 				for ok := iter.First(); ok; ok = iter.Next() {
-					x += iter.Item().val
 				}
 				iter.Release()
 			}
@@ -392,9 +382,7 @@ func main() {
 		print("tidwall(G): scan          ")
 		lotsa.Ops(N, 1, func(i, _ int) {
 			if i == 0 {
-				var x int
 				ttrG.Scan(func(item intT) bool {
-					x += item.val
 					return true
 				})
 			}
@@ -402,10 +390,8 @@ func main() {
 		print("tidwall(G): walk          ")
 		lotsa.Ops(N, 1, func(i, _ int) {
 			if i == 0 {
-				var x int
 				ttrG.Walk(func(items []intT) bool {
 					for j := 0; j < len(items); j++ {
-						x += items[j].val
 					}
 					return true
 				})
@@ -415,9 +401,7 @@ func main() {
 		print("go-arr:     for-loop      ")
 		lotsa.Ops(N, 1, func(i, _ int) {
 			if i == 0 {
-				var x int
 				for j := 0; j < len(arr); j++ {
-					x += arr[j].val
 				}
 			}
 		})
