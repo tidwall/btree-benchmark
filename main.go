@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"math/rand"
 	"os"
@@ -31,24 +32,35 @@ func less(a, b interface{}) bool {
 	return a.(itemT) < b.(itemT)
 }
 
-func newTBTree() *tbtree.BTree {
-	return tbtree.NewNonConcurrent(less)
+func newTBTree(degree int) *tbtree.BTree {
+	return tbtree.NewOptions(less, tbtree.Options{
+		NoLocks: true,
+		Degree:  degree,
+	})
 }
-func newTBTreeG() *tbtree.Generic[itemT] {
-	return tbtree.NewGenericOptions[itemT](lessG, tbtree.Options{NoLocks: true})
+func newTBTreeG(degree int) *tbtree.Generic[itemT] {
+	return tbtree.NewGenericOptions[itemT](lessG, tbtree.Options{
+		NoLocks: true,
+		Degree:  degree,
+	})
 }
-func newTBTreeM() *tbtree.Map[itemT, struct{}] {
-	return new(tbtree.Map[itemT, struct{}])
+func newTBTreeM(degree int) *tbtree.Map[itemT, struct{}] {
+	return tbtree.NewMap[itemT, struct{}](degree)
 }
-func newGBTree() *gbtree.BTree {
-	return gbtree.New(128)
+func newGBTree(degree int) *gbtree.BTree {
+	return gbtree.New(degree)
 }
-func newGBTreeG() *gbtree.BTreeG[itemT] {
-	return gbtree.NewG[itemT](128, lessG)
+func newGBTreeG(degree int) *gbtree.BTreeG[itemT] {
+	return gbtree.NewG[itemT](degree, lessG)
 }
 
 func main() {
 	N := 1_000_000
+	degree := 32
+	flag.IntVar(&N, "count", N, "number of items")
+	flag.IntVar(&degree, "degree", degree, "B-tree degree")
+	flag.Parse()
+
 	keys := make([]itemT, N)
 	keysM := make(map[int]bool)
 	for i := 0; i < N; i++ {
@@ -81,17 +93,20 @@ func main() {
 		}
 	}
 
-	gtr := newGBTree()
-	gtrG := newGBTreeG()
-	ttr := newTBTree()
-	ttrG := newTBTreeG()
-	ttrM := newTBTreeM()
+	gtr := newGBTree(degree)
+	gtrG := newGBTreeG(degree)
+	ttr := newTBTree(degree)
+	ttrG := newTBTreeG(degree)
+	ttrM := newTBTreeM(degree)
 
 	withSeq := true
 	withRand := true
 	withRandSet := true
 	withRange := true
 	withHints := true
+
+	fmt.Printf("\ndegree=%d, key=string (16 bytes), count=%d\n",
+		degree, N)
 
 	var hint tbtree.PathHint
 	var hintG tbtree.PathHint
@@ -104,58 +119,58 @@ func main() {
 
 		// google
 		print("google:     set-seq        ")
-		gtr = newGBTree()
+		gtr = newGBTree(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
 			gtr.ReplaceOrInsert(keys[i])
 		})
 
 		print("google(G):  set-seq        ")
-		gtrG = newGBTreeG()
+		gtrG = newGBTreeG(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
 			gtrG.ReplaceOrInsert(keys[i])
 		})
 
 		// non-generics tidwall
 		print("tidwall:    set-seq        ")
-		ttr = newTBTree()
+		ttr = newTBTree(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
 			ttr.Set(keys[i])
 		})
 		print("tidwall(G): set-seq        ")
-		ttrG = newTBTreeG()
+		ttrG = newTBTreeG(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
 			ttrG.Set(keys[i])
 		})
 		print("tidwall(M): set-seq        ")
-		ttrM = newTBTreeM()
+		ttrM = newTBTreeM(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
 			ttrM.Set(keys[i], struct{}{})
 		})
 
 		if withHints {
 			print("tidwall:    set-seq-hint   ")
-			ttr = newTBTree()
+			ttr = newTBTree(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
 				ttr.SetHint(keys[i], &hint)
 			})
 			print("tidwall(G): set-seq-hint   ")
-			ttrG = newTBTreeG()
+			ttrG = newTBTreeG(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
 				ttrG.SetHint(keys[i], &hintG)
 			})
 		}
 		print("tidwall:    load-seq       ")
-		ttr = newTBTree()
+		ttr = newTBTree(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
 			ttr.Load(keys[i])
 		})
 		print("tidwall(G): load-seq       ")
-		ttrG = newTBTreeG()
+		ttrG = newTBTreeG(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
 			ttrG.Load(keys[i])
 		})
 		print("tidwall(M): load-seq       ")
-		ttrM = newTBTreeM()
+		ttrM = newTBTreeM(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
 			ttrM.Load(keys[i], struct{}{})
 		})
@@ -229,38 +244,38 @@ func main() {
 			println("** random set **")
 			shuffleInts()
 			print("google:     set-rand       ")
-			gtr = newGBTree()
+			gtr = newGBTree(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
 				gtr.ReplaceOrInsert(keys[i])
 			})
 			print("google(G):  set-rand       ")
-			gtrG = newGBTreeG()
+			gtrG = newGBTreeG(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
 				gtrG.ReplaceOrInsert(keys[i])
 			})
 			print("tidwall:    set-rand       ")
-			ttr = newTBTree()
+			ttr = newTBTree(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
 				ttr.Set(keys[i])
 			})
 			print("tidwall(G): set-rand       ")
-			ttrG = newTBTreeG()
+			ttrG = newTBTreeG(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
 				ttrG.Set(keys[i])
 			})
 			print("tidwall(M): set-rand       ")
-			ttrM = newTBTreeM()
+			ttrM = newTBTreeM(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
 				ttrM.Set(keys[i], struct{}{})
 			})
 			if withHints {
 				print("tidwall:    set-rand-hint  ")
-				ttr = newTBTree()
+				ttr = newTBTree(degree)
 				lotsa.Ops(N, 1, func(i, _ int) {
 					ttr.SetHint(keys[i], &hint)
 				})
 				print("tidwall(G): set-rand-hint  ")
-				ttrG = newTBTreeG()
+				ttrG = newTBTreeG(degree)
 				lotsa.Ops(N, 1, func(i, _ int) {
 					ttrG.SetHint(keys[i], &hintG)
 				})
@@ -276,16 +291,16 @@ func main() {
 				ttrG.Set(keys[i])
 			})
 			print("tidwall:    load-rand      ")
-			ttr = newTBTree()
+			ttr = newTBTree(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
 				ttr.Load(keys[i])
 			})
 			print("tidwall(G): load-rand      ")
-			ttrG = newTBTreeG()
+			ttrG = newTBTreeG(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
 				ttrG.Load(keys[i])
 			})
-			ttrM = newTBTreeM()
+			ttrM = newTBTreeM(degree)
 			print("tidwall(M): load-rand      ")
 			lotsa.Ops(N, 1, func(i, _ int) {
 				ttrM.Load(keys[i], struct{}{})
@@ -295,11 +310,11 @@ func main() {
 		println("** random get **")
 
 		shuffleInts()
-		gtr = newGBTree()
-		gtrG = newGBTreeG()
-		ttr = newTBTree()
-		ttrM = newTBTreeM()
-		ttrG = newTBTreeG()
+		gtr = newGBTree(degree)
+		gtrG = newGBTreeG(degree)
+		ttr = newTBTree(degree)
+		ttrM = newTBTreeM(degree)
+		ttrG = newTBTreeG(degree)
 		for _, key := range keys {
 			gtr.ReplaceOrInsert(key)
 			gtrG.ReplaceOrInsert(key)
