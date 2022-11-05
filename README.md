@@ -18,56 +18,56 @@ The degrees is 32.
 degree=32, key=string (16 bytes), count=1000000
 
 ** sequential set **
-google:     set-seq        1,000,000 ops in 227ms, 4,403,863/sec, 227 ns/op, 49.2 MB, 51 bytes/op
-google(G):  set-seq        1,000,000 ops in 156ms, 6,411,038/sec, 155 ns/op, 34.0 MB, 35 bytes/op
-tidwall:    set-seq        1,000,000 ops in 146ms, 6,867,149/sec, 145 ns/op, 48.7 MB, 51 bytes/op
-tidwall(G): set-seq        1,000,000 ops in 115ms, 8,681,032/sec, 115 ns/op, 33.5 MB, 35 bytes/op
-tidwall(M): set-seq        1,000,000 ops in 89ms, 11,240,649/sec, 88 ns/op, 33.5 MB, 35 bytes/op
-tidwall:    set-seq-hint   1,000,000 ops in 76ms, 13,143,295/sec, 76 ns/op, 48.7 MB, 51 bytes/op
-tidwall(G): set-seq-hint   1,000,000 ops in 56ms, 17,827,496/sec, 56 ns/op, 33.5 MB, 35 bytes/op
-tidwall:    load-seq       1,000,000 ops in 47ms, 21,349,635/sec, 46 ns/op, 48.7 MB, 51 bytes/op
-tidwall(G): load-seq       1,000,000 ops in 29ms, 34,432,890/sec, 29 ns/op, 33.5 MB, 35 bytes/op
-tidwall(M): load-seq       1,000,000 ops in 26ms, 38,911,577/sec, 25 ns/op, 33.5 MB, 35 bytes/op
-go-arr:     append         1,000,000 ops in 13ms, 74,212,879/sec, 13 ns/op, 16.9 MB, 17 bytes/op
+google:     set-seq        1,000,000 ops in 207ms, 4,825,592/sec, 207 ns/op, 49.2 MB, 51.6 bytes/op
+google(G):  set-seq        1,000,000 ops in 159ms, 6,301,736/sec, 158 ns/op, 34.0 MB, 35.6 bytes/op
+tidwall:    set-seq        1,000,000 ops in 134ms, 7,465,291/sec, 133 ns/op, 48.7 MB, 51.1 bytes/op
+tidwall(G): set-seq        1,000,000 ops in 108ms, 9,244,301/sec, 108 ns/op, 33.5 MB, 35.1 bytes/op
+tidwall(M): set-seq        1,000,000 ops in 87ms, 11,454,912/sec, 87 ns/op, 33.5 MB, 35.1 bytes/op
+tidwall:    set-seq-hint   1,000,000 ops in 72ms, 13,801,161/sec, 72 ns/op, 48.7 MB, 51.1 bytes/op
+tidwall(G): set-seq-hint   1,000,000 ops in 54ms, 18,357,409/sec, 54 ns/op, 33.5 MB, 35.1 bytes/op
+tidwall:    load-seq       1,000,000 ops in 45ms, 22,339,567/sec, 44 ns/op, 48.7 MB, 51.1 bytes/op
+tidwall(G): load-seq       1,000,000 ops in 29ms, 34,439,017/sec, 29 ns/op, 33.5 MB, 35.1 bytes/op
+tidwall(M): load-seq       1,000,000 ops in 26ms, 38,972,364/sec, 25 ns/op, 33.5 MB, 35.1 bytes/op
+go-arr:     append         1,000,000 ops in 13ms, 76,438,474/sec, 13 ns/op, 16.9 MB, 17.8 bytes/op
 
 ** sequential get **
-google:     get-seq        1,000,000 ops in 208ms, 4,818,820/sec, 207 ns/op
-google(G):  get-seq        1,000,000 ops in 153ms, 6,539,750/sec, 152 ns/op
-tidwall:    get-seq        1,000,000 ops in 142ms, 7,038,170/sec, 142 ns/op
-tidwall(G): get-seq        1,000,000 ops in 108ms, 9,228,181/sec, 108 ns/op
-tidwall(M): get-seq        1,000,000 ops in 88ms, 11,328,791/sec, 88 ns/op
-tidwall:    get-seq-hint   1,000,000 ops in 68ms, 14,768,458/sec, 67 ns/op
-tidwall(G): get-seq-hint   1,000,000 ops in 46ms, 21,667,826/sec, 46 ns/op
+google:     get-seq        1,000,000 ops in 191ms, 5,227,249/sec, 191 ns/op
+google(G):  get-seq        1,000,000 ops in 148ms, 6,776,054/sec, 147 ns/op
+tidwall:    get-seq        1,000,000 ops in 135ms, 7,397,461/sec, 135 ns/op
+tidwall(G): get-seq        1,000,000 ops in 107ms, 9,382,590/sec, 106 ns/op
+tidwall(M): get-seq        1,000,000 ops in 88ms, 11,416,214/sec, 87 ns/op
+tidwall:    get-seq-hint   1,000,000 ops in 66ms, 15,059,343/sec, 66 ns/op
+tidwall(G): get-seq-hint   1,000,000 ops in 46ms, 21,673,364/sec, 46 ns/op
 
 ** random set **
-google:     set-rand       1,000,000 ops in 1040ms, 961,554/sec, 1039 ns/op, 38.8 MB, 40 bytes/op
-google(G):  set-rand       1,000,000 ops in 656ms, 1,524,490/sec, 655 ns/op, 23.5 MB, 24 bytes/op
-tidwall:    set-rand       1,000,000 ops in 778ms, 1,285,492/sec, 777 ns/op, 38.8 MB, 40 bytes/op
-tidwall(G): set-rand       1,000,000 ops in 511ms, 1,957,928/sec, 510 ns/op, 23.5 MB, 24 bytes/op
-tidwall(M): set-rand       1,000,000 ops in 482ms, 2,073,218/sec, 482 ns/op, 23.5 MB, 24 bytes/op
-tidwall:    set-rand-hint  1,000,000 ops in 905ms, 1,105,298/sec, 904 ns/op, 38.8 MB, 40 bytes/op
-tidwall(G): set-rand-hint  1,000,000 ops in 591ms, 1,692,256/sec, 590 ns/op, 23.5 MB, 24 bytes/op
-tidwall:    set-after-copy 1,000,000 ops in 949ms, 1,053,795/sec, 948 ns/op
-tidwall(G): set-after-copy 1,000,000 ops in 577ms, 1,733,692/sec, 576 ns/op
-tidwall:    load-rand      1,000,000 ops in 833ms, 1,200,349/sec, 833 ns/op, 38.8 MB, 40 bytes/op
-tidwall(G): load-rand      1,000,000 ops in 566ms, 1,765,325/sec, 566 ns/op, 23.5 MB, 24 bytes/op
-tidwall(M): load-rand      1,000,000 ops in 524ms, 1,907,006/sec, 524 ns/op, 23.5 MB, 24 bytes/op
+google:     set-rand       1,000,000 ops in 968ms, 1,032,568/sec, 968 ns/op, 38.8 MB, 40.7 bytes/op
+google(G):  set-rand       1,000,000 ops in 625ms, 1,601,237/sec, 624 ns/op, 23.5 MB, 24.7 bytes/op
+tidwall:    set-rand       1,000,000 ops in 755ms, 1,323,978/sec, 755 ns/op, 38.8 MB, 40.6 bytes/op
+tidwall(G): set-rand       1,000,000 ops in 513ms, 1,947,800/sec, 513 ns/op, 23.5 MB, 24.6 bytes/op
+tidwall(M): set-rand       1,000,000 ops in 476ms, 2,099,771/sec, 476 ns/op, 23.5 MB, 24.6 bytes/op
+tidwall:    set-rand-hint  1,000,000 ops in 950ms, 1,052,387/sec, 950 ns/op, 38.8 MB, 40.6 bytes/op
+tidwall(G): set-rand-hint  1,000,000 ops in 556ms, 1,796,971/sec, 556 ns/op, 23.5 MB, 24.6 bytes/op
+tidwall:    set-after-copy 1,000,000 ops in 893ms, 1,120,163/sec, 892 ns/op
+tidwall(G): set-after-copy 1,000,000 ops in 547ms, 1,828,304/sec, 546 ns/op
+tidwall:    load-rand      1,000,000 ops in 751ms, 1,331,323/sec, 751 ns/op, 38.8 MB, 40.6 bytes/op
+tidwall(G): load-rand      1,000,000 ops in 512ms, 1,951,348/sec, 512 ns/op, 23.5 MB, 24.6 bytes/op
+tidwall(M): load-rand      1,000,000 ops in 504ms, 1,985,926/sec, 503 ns/op, 23.5 MB, 24.6 bytes/op
 
 ** random get **
-google:     get-rand       1,000,000 ops in 1459ms, 685,468/sec, 1458 ns/op
-google(G):  get-rand       1,000,000 ops in 785ms, 1,273,144/sec, 785 ns/op
-tidwall:    get-rand       1,000,000 ops in 1049ms, 952,865/sec, 1049 ns/op
-tidwall(G): get-rand       1,000,000 ops in 577ms, 1,734,046/sec, 576 ns/op
-tidwall(M): get-rand       1,000,000 ops in 538ms, 1,858,632/sec, 538 ns/op
-tidwall:    get-rand-hint  1,000,000 ops in 1084ms, 922,717/sec, 1083 ns/op
-tidwall(G): get-rand-hint  1,000,000 ops in 643ms, 1,555,637/sec, 642 ns/op
+google:     get-rand       1,000,000 ops in 1486ms, 672,937/sec, 1486 ns/op
+google(G):  get-rand       1,000,000 ops in 743ms, 1,345,497/sec, 743 ns/op
+tidwall:    get-rand       1,000,000 ops in 1068ms, 936,318/sec, 1068 ns/op
+tidwall(G): get-rand       1,000,000 ops in 559ms, 1,788,164/sec, 559 ns/op
+tidwall(M): get-rand       1,000,000 ops in 548ms, 1,825,106/sec, 547 ns/op
+tidwall:    get-rand-hint  1,000,000 ops in 1070ms, 934,912/sec, 1069 ns/op
+tidwall(G): get-rand-hint  1,000,000 ops in 632ms, 1,582,180/sec, 632 ns/op
 
 ** range **
-google:     ascend        1,000,000 ops in 9ms, 106,277,921/sec, 9 ns/op
-google(G):  ascend        1,000,000 ops in 9ms, 107,128,513/sec, 9 ns/op
-tidwall:    ascend        1,000,000 ops in 7ms, 133,345,921/sec, 7 ns/op
-tidwall(G): iter          1,000,000 ops in 9ms, 110,793,601/sec, 9 ns/op
-tidwall(G): scan          1,000,000 ops in 8ms, 132,896,246/sec, 7 ns/op
-tidwall(G): walk          1,000,000 ops in 3ms, 323,001,693/sec, 3 ns/op
-go-arr:     for-loop      1,000,000 ops in 2ms, 623,506,312/sec, 1 ns/op
+google:     ascend        1,000,000 ops in 9ms, 117,320,397/sec, 8 ns/op
+google(G):  ascend        1,000,000 ops in 8ms, 125,864,009/sec, 7 ns/op
+tidwall:    ascend        1,000,000 ops in 8ms, 127,609,339/sec, 7 ns/op
+tidwall(G): iter          1,000,000 ops in 8ms, 125,250,501/sec, 7 ns/op
+tidwall(G): scan          1,000,000 ops in 6ms, 156,598,676/sec, 6 ns/op
+tidwall(G): walk          1,000,000 ops in 3ms, 335,664,298/sec, 2 ns/op
+go-arr:     for-loop      1,000,000 ops in 2ms, 621,874,304/sec, 1 ns/op
 ```
