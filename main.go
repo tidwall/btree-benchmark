@@ -12,24 +12,31 @@ import (
 	"github.com/tidwall/lotsa"
 )
 
-// type itemT int
+type keyT string
+type valT int64
 
-// func intToItemT(i int) itemT { return itemT(i) }
+type itemT struct {
+	key keyT
+	val valT
+}
 
-type itemT string
+func int64ToItemT(i int64) itemT {
+	return itemT{
+		key: keyT(fmt.Sprintf("%016d", i)),
+		val: valT(i),
+	}
+}
 
-func intToItemT(i int) itemT { return itemT(fmt.Sprintf("%016d", i)) }
-
-func (i itemT) Less(other gbtree.Item) bool {
-	return i < other.(itemT)
+func (item itemT) Less(other gbtree.Item) bool {
+	return item.key < other.(itemT).key
 }
 
 func lessG(a, b itemT) bool {
-	return a < b
+	return a.key < b.key
 }
 
 func less(a, b interface{}) bool {
-	return a.(itemT) < b.(itemT)
+	return a.(itemT).key < b.(itemT).key
 }
 
 func newTBTree(degree int) *tbtree.BTree {
@@ -38,20 +45,20 @@ func newTBTree(degree int) *tbtree.BTree {
 		Degree:  degree,
 	})
 }
-func newTBTreeG(degree int) *tbtree.Generic[itemT] {
-	return tbtree.NewGenericOptions[itemT](lessG, tbtree.Options{
+func newTBTreeG(degree int) *tbtree.BTreeG[itemT] {
+	return tbtree.NewBTreeGOptions(lessG, tbtree.Options{
 		NoLocks: true,
 		Degree:  degree,
 	})
 }
-func newTBTreeM(degree int) *tbtree.Map[itemT, struct{}] {
-	return tbtree.NewMap[itemT, struct{}](degree)
+func newTBTreeM(degree int) *tbtree.Map[keyT, valT] {
+	return tbtree.NewMap[keyT, valT](degree)
 }
 func newGBTree(degree int) *gbtree.BTree {
 	return gbtree.New(degree)
 }
 func newGBTreeG(degree int) *gbtree.BTreeG[itemT] {
-	return gbtree.NewG[itemT](degree, lessG)
+	return gbtree.NewG(degree, lessG)
 }
 
 func main() {
@@ -61,15 +68,15 @@ func main() {
 	flag.IntVar(&degree, "degree", degree, "B-tree degree")
 	flag.Parse()
 
-	keys := make([]itemT, N)
-	keysM := make(map[int]bool)
+	items := make([]itemT, N)
+	itemsM := make(map[int64]bool)
 	for i := 0; i < N; i++ {
 		for {
-			key := rand.Intn(10000000000000000)
-			if !keysM[key] {
-				keysM[key] = true
-				keys[i] = intToItemT(key)
-				if len(keys[i]) != 16 {
+			key := rand.Int63n(10000000000000000)
+			if !itemsM[key] {
+				itemsM[key] = true
+				items[i] = int64ToItemT(key)
+				if len(items[i].key) != 16 {
 					panic("!")
 				}
 				break
@@ -81,15 +88,15 @@ func main() {
 	lotsa.MemUsage = true
 
 	sortInts := func() {
-		sort.Slice(keys, func(i, j int) bool {
-			return less(keys[i], keys[j])
+		sort.Slice(items, func(i, j int) bool {
+			return less(items[i], items[j])
 		})
 	}
 
 	shuffleInts := func() {
-		for i := range keys {
+		for i := range items {
 			j := rand.Intn(i + 1)
-			keys[i], keys[j] = keys[j], keys[i]
+			items[i], items[j] = items[j], items[i]
 		}
 	}
 
@@ -105,7 +112,7 @@ func main() {
 	withRange := true
 	withHints := true
 
-	fmt.Printf("\ndegree=%d, key=string (16 bytes), count=%d\n",
+	fmt.Printf("\ndegree=%d, key=string (16 bytes), val=int64, count=%d\n",
 		degree, N)
 
 	var hint tbtree.PathHint
@@ -121,64 +128,64 @@ func main() {
 		print("google:     set-seq        ")
 		gtr = newGBTree(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
-			gtr.ReplaceOrInsert(keys[i])
+			gtr.ReplaceOrInsert(items[i])
 		})
 
 		print("google(G):  set-seq        ")
 		gtrG = newGBTreeG(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
-			gtrG.ReplaceOrInsert(keys[i])
+			gtrG.ReplaceOrInsert(items[i])
 		})
 
 		// non-generics tidwall
 		print("tidwall:    set-seq        ")
 		ttr = newTBTree(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
-			ttr.Set(keys[i])
+			ttr.Set(items[i])
 		})
 		print("tidwall(G): set-seq        ")
 		ttrG = newTBTreeG(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
-			ttrG.Set(keys[i])
+			ttrG.Set(items[i])
 		})
 		print("tidwall(M): set-seq        ")
 		ttrM = newTBTreeM(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
-			ttrM.Set(keys[i], struct{}{})
+			ttrM.Set(items[i].key, items[i].val)
 		})
 
 		if withHints {
 			print("tidwall:    set-seq-hint   ")
 			ttr = newTBTree(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
-				ttr.SetHint(keys[i], &hint)
+				ttr.SetHint(items[i], &hint)
 			})
 			print("tidwall(G): set-seq-hint   ")
 			ttrG = newTBTreeG(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
-				ttrG.SetHint(keys[i], &hintG)
+				ttrG.SetHint(items[i], &hintG)
 			})
 		}
 		print("tidwall:    load-seq       ")
 		ttr = newTBTree(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
-			ttr.Load(keys[i])
+			ttr.Load(items[i])
 		})
 		print("tidwall(G): load-seq       ")
 		ttrG = newTBTreeG(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
-			ttrG.Load(keys[i])
+			ttrG.Load(items[i])
 		})
 		print("tidwall(M): load-seq       ")
 		ttrM = newTBTreeM(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
-			ttrM.Load(keys[i], struct{}{})
+			ttrM.Load(items[i].key, items[i].val)
 		})
 
 		// go array
 		print("go-arr:     append         ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			arr = append(arr, keys[i])
+			arr = append(arr, items[i])
 		})
 
 		println()
@@ -187,35 +194,35 @@ func main() {
 
 		print("google:     get-seq        ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			re := gtr.Get(keys[i])
+			re := gtr.Get(items[i])
 			if re == nil {
 				panic(re)
 			}
 		})
 		print("google(G):  get-seq        ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			re, ok := gtrG.Get(keys[i])
+			re, ok := gtrG.Get(items[i])
 			if !ok {
 				panic(re)
 			}
 		})
 		print("tidwall:    get-seq        ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			re := ttr.Get(keys[i])
+			re := ttr.Get(items[i])
 			if re == nil {
 				panic(re)
 			}
 		})
 		print("tidwall(G): get-seq        ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			re, ok := ttrG.Get(keys[i])
+			re, ok := ttrG.Get(items[i])
 			if !ok {
 				panic(re)
 			}
 		})
 		print("tidwall(M): get-seq        ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			re, ok := ttrM.Get(keys[i])
+			re, ok := ttrM.Get(items[i].key)
 			if !ok {
 				panic(re)
 			}
@@ -223,14 +230,14 @@ func main() {
 		if withHints {
 			print("tidwall:    get-seq-hint   ")
 			lotsa.Ops(N, 1, func(i, _ int) {
-				re := ttr.GetHint(keys[i], &hint)
+				re := ttr.GetHint(items[i], &hint)
 				if re == nil {
 					panic(re)
 				}
 			})
 			print("tidwall(G): get-seq-hint   ")
 			lotsa.Ops(N, 1, func(i, _ int) {
-				re, ok := ttrG.GetHint(keys[i], &hintG)
+				re, ok := ttrG.GetHint(items[i], &hintG)
 				if !ok {
 					panic(re)
 				}
@@ -246,64 +253,64 @@ func main() {
 			print("google:     set-rand       ")
 			gtr = newGBTree(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
-				gtr.ReplaceOrInsert(keys[i])
+				gtr.ReplaceOrInsert(items[i])
 			})
 			print("google(G):  set-rand       ")
 			gtrG = newGBTreeG(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
-				gtrG.ReplaceOrInsert(keys[i])
+				gtrG.ReplaceOrInsert(items[i])
 			})
 			print("tidwall:    set-rand       ")
 			ttr = newTBTree(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
-				ttr.Set(keys[i])
+				ttr.Set(items[i])
 			})
 			print("tidwall(G): set-rand       ")
 			ttrG = newTBTreeG(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
-				ttrG.Set(keys[i])
+				ttrG.Set(items[i])
 			})
 			print("tidwall(M): set-rand       ")
 			ttrM = newTBTreeM(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
-				ttrM.Set(keys[i], struct{}{})
+				ttrM.Set(items[i].key, items[i].val)
 			})
 			if withHints {
 				print("tidwall:    set-rand-hint  ")
 				ttr = newTBTree(degree)
 				lotsa.Ops(N, 1, func(i, _ int) {
-					ttr.SetHint(keys[i], &hint)
+					ttr.SetHint(items[i], &hint)
 				})
 				print("tidwall(G): set-rand-hint  ")
 				ttrG = newTBTreeG(degree)
 				lotsa.Ops(N, 1, func(i, _ int) {
-					ttrG.SetHint(keys[i], &hintG)
+					ttrG.SetHint(items[i], &hintG)
 				})
 			}
 			print("tidwall:    set-after-copy ")
 			ttr = ttr.Copy()
 			lotsa.Ops(N, 1, func(i, _ int) {
-				ttr.Set(keys[i])
+				ttr.Set(items[i])
 			})
 			print("tidwall(G): set-after-copy ")
 			ttrG = ttrG.Copy()
 			lotsa.Ops(N, 1, func(i, _ int) {
-				ttrG.Set(keys[i])
+				ttrG.Set(items[i])
 			})
 			print("tidwall:    load-rand      ")
 			ttr = newTBTree(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
-				ttr.Load(keys[i])
+				ttr.Load(items[i])
 			})
 			print("tidwall(G): load-rand      ")
 			ttrG = newTBTreeG(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
-				ttrG.Load(keys[i])
+				ttrG.Load(items[i])
 			})
 			ttrM = newTBTreeM(degree)
 			print("tidwall(M): load-rand      ")
 			lotsa.Ops(N, 1, func(i, _ int) {
-				ttrM.Load(keys[i], struct{}{})
+				ttrM.Load(items[i].key, items[i].val)
 			})
 		}
 		println()
@@ -315,46 +322,46 @@ func main() {
 		ttr = newTBTree(degree)
 		ttrM = newTBTreeM(degree)
 		ttrG = newTBTreeG(degree)
-		for _, key := range keys {
-			gtr.ReplaceOrInsert(key)
-			gtrG.ReplaceOrInsert(key)
-			ttrG.Set(key)
-			ttr.Set(key)
-			ttrM.Set(key, struct{}{})
+		for _, item := range items {
+			gtr.ReplaceOrInsert(item)
+			gtrG.ReplaceOrInsert(item)
+			ttrG.Set(item)
+			ttr.Set(item)
+			ttrM.Set(item.key, item.val)
 		}
 		shuffleInts()
 
 		print("google:     get-rand       ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			re := gtr.Get(keys[i])
+			re := gtr.Get(items[i])
 			if re == nil {
 				panic(re)
 			}
 		})
 		print("google(G):  get-rand       ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			re, ok := gtrG.Get(keys[i])
+			re, ok := gtrG.Get(items[i])
 			if !ok {
 				panic(re)
 			}
 		})
 		print("tidwall:    get-rand       ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			re := ttr.Get(keys[i])
+			re := ttr.Get(items[i])
 			if re == nil {
 				panic(re)
 			}
 		})
 		print("tidwall(G): get-rand       ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			re, ok := ttrG.Get(keys[i])
+			re, ok := ttrG.Get(items[i])
 			if !ok {
 				panic(re)
 			}
 		})
 		print("tidwall(M): get-rand       ")
 		lotsa.Ops(N, 1, func(i, _ int) {
-			re, ok := ttrM.Get(keys[i])
+			re, ok := ttrM.Get(items[i].key)
 			if !ok {
 				panic(re)
 			}
@@ -362,14 +369,14 @@ func main() {
 		if withHints {
 			print("tidwall:    get-rand-hint  ")
 			lotsa.Ops(N, 1, func(i, _ int) {
-				re := ttr.GetHint(keys[i], &hint)
+				re := ttr.GetHint(items[i], &hint)
 				if re == nil {
 					panic(re)
 				}
 			})
 			print("tidwall(G): get-rand-hint  ")
 			lotsa.Ops(N, 1, func(i, _ int) {
-				re, ok := ttrG.GetHint(keys[i], &hintG)
+				re, ok := ttrG.GetHint(items[i], &hintG)
 				if !ok {
 					panic(re)
 				}
