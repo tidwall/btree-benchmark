@@ -8,6 +8,7 @@ import (
 	"sort"
 
 	gbtree "github.com/google/btree"
+	"github.com/pascaldekloe/pile"
 	tbtree "github.com/tidwall/btree"
 	"github.com/tidwall/lotsa"
 )
@@ -102,6 +103,7 @@ func main() {
 
 	gtr := newGBTree(degree)
 	gtrG := newGBTreeG(degree)
+	pileM := &pile.Map[keyT, valT]{}
 	ttr := newTBTree(degree)
 	ttrG := newTBTreeG(degree)
 	ttrM := newTBTreeM(degree)
@@ -135,6 +137,13 @@ func main() {
 		gtrG = newGBTreeG(degree)
 		lotsa.Ops(N, 1, func(i, _ int) {
 			gtrG.ReplaceOrInsert(items[i])
+		})
+
+		// pile
+		print("pile(M):    set-seq        ")
+		pileM = &pile.Map[keyT, valT]{}
+		lotsa.Ops(N, 1, func(i, _ int) {
+			pileM.Put(items[i].key, items[i].val)
 		})
 
 		// non-generics tidwall
@@ -206,6 +215,13 @@ func main() {
 				panic(re)
 			}
 		})
+		print("pile(M):    get-seq        ")
+		lotsa.Ops(N, 1, func(i, _ int) {
+			re, ok := pileM.Find(items[i].key)
+			if !ok {
+				panic(re)
+			}
+		})
 		print("tidwall:    get-seq        ")
 		lotsa.Ops(N, 1, func(i, _ int) {
 			re := ttr.Get(items[i])
@@ -259,6 +275,11 @@ func main() {
 			gtrG = newGBTreeG(degree)
 			lotsa.Ops(N, 1, func(i, _ int) {
 				gtrG.ReplaceOrInsert(items[i])
+			})
+			print("pile(M):    set-rand       ")
+			pileM = &pile.Map[keyT, valT]{}
+			lotsa.Ops(N, 1, func(i, _ int) {
+				pileM.Put(items[i].key, items[i].val)
 			})
 			print("tidwall:    set-rand       ")
 			ttr = newTBTree(degree)
@@ -319,12 +340,14 @@ func main() {
 		shuffleInts()
 		gtr = newGBTree(degree)
 		gtrG = newGBTreeG(degree)
+		pileM = &pile.Map[keyT, valT]{}
 		ttr = newTBTree(degree)
 		ttrM = newTBTreeM(degree)
 		ttrG = newTBTreeG(degree)
 		for _, item := range items {
 			gtr.ReplaceOrInsert(item)
 			gtrG.ReplaceOrInsert(item)
+			pileM.Put(item.key, item.val)
 			ttrG.Set(item)
 			ttr.Set(item)
 			ttrM.Set(item.key, item.val)
@@ -341,6 +364,13 @@ func main() {
 		print("google(G):  get-rand       ")
 		lotsa.Ops(N, 1, func(i, _ int) {
 			re, ok := gtrG.Get(items[i])
+			if !ok {
+				panic(re)
+			}
+		})
+		print("pile(M):    get-rand       ")
+		lotsa.Ops(N, 1, func(i, _ int) {
+			re, ok := pileM.Find(items[i].key)
 			if !ok {
 				panic(re)
 			}
@@ -401,6 +431,13 @@ func main() {
 				gtrG.Ascend(func(item itemT) bool {
 					return true
 				})
+			}
+		})
+		print("pile(M):    iter          ")
+		lotsa.Ops(N, 1, func(i, _ int) {
+			if i == 0 {
+				for c, ok := pileM.Least(); ok; ok = c.Ascend() {
+				}
 			}
 		})
 		print("tidwall:    ascend        ")
