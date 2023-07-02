@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/google/btree v1.1.2
-	github.com/pascaldekloe/pile v0.3.0
+	github.com/pascaldekloe/pile v1.0.0
 	github.com/tidwall/btree v1.5.0
 	github.com/tidwall/lotsa v1.0.3
 )
