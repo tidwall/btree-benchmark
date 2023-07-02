@@ -4,13 +4,14 @@ Benchmark utility for the [tidwall/btree](https://github.com/tidwall/btree) Go p
 
 - `google`: The [google/btree](https://github.com/google/btree) package (without generics)
 - `google(G)`: The [google/btree](https://github.com/google/btree) package (generics)
+- `pile(M)`: The [pascaldekloe/pile](https://github.com/pascaldekloe/pile) package (generics)
 - `tidwall`: The [tidwall/btree](https://github.com/tidwall/btree) package (without generics)
 - `tidwall(G)`: The [tidwall/btree](https://github.com/tidwall/btree) package (generics)
 - `tidwall(M)`: The [tidwall/btree](https://github.com/tidwall/btree) package (generics using the `btree.Map` type)
 - `go-arr`: A simple Go array
 
 The following benchmarks were run on my 2021 Macbook Pro M1 Max 
-using Go version 1.19.3.  
+using Go version 1.19.3.
 All items are key/value pairs where the key is a string filled with 16 random digits such as `5204379379828236`, and the value is the int64 representation of the key.
 The degree is 32.  
 
