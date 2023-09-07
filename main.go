@@ -310,6 +310,12 @@ func main() {
 			lotsa.Ops(N, 1, func(i, _ int) {
 				ttrM.Load(items[i].key, items[i].val)
 			})
+
+			map_ := make(map[keyT]valT)
+			print("go-map:     set            ")
+			lotsa.Ops(N, 1, func(i, _ int) {
+				map_[items[i].key] = items[i].val
+			})
 		}
 		println()
 		println("** random get **")
@@ -320,12 +326,14 @@ func main() {
 		ttr = newTBTree(degree)
 		ttrM = newTBTreeM(degree)
 		ttrG = newTBTreeG(degree)
+		map_ := make(map[keyT]valT)
 		for _, item := range items {
 			gtr.ReplaceOrInsert(item)
 			gtrG.ReplaceOrInsert(item)
 			ttrG.Set(item)
 			ttr.Set(item)
 			ttrM.Set(item.key, item.val)
+			map_[item.key] = item.val
 		}
 		shuffleInts()
 
@@ -380,6 +388,13 @@ func main() {
 				}
 			})
 		}
+		print("go-map:     get            ")
+		lotsa.Ops(N, 1, func(i, _ int) {
+			re, ok := map_[items[i].key]
+			if !ok {
+				panic(re)
+			}
+		})
 	}
 
 	if !withRand {
